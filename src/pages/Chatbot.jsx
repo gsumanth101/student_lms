@@ -4,7 +4,10 @@ import { getGeminiResponse } from '../services/geminiService';
 
 function Chatbot({ onClose }) {
   const [messages, setMessages] = useState([
-    { text: "Hi there! I'm your deep learning assistant. What would you like to know about deep learning?", user: false }
+    { 
+      text: "Hi there! I'm your friendly educational assistant. What topic would you like to explore today?", 
+      user: false 
+    }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -31,7 +34,7 @@ function Chatbot({ onClose }) {
       setMessages((prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
       console.error('Error getting response from Gemini:', error);
-      const errorMessage = { text: 'Sorry, I encountered an error. Please try again with a deep learning related question.', user: false };
+      const errorMessage = { text: 'Sorry, I encountered an error. Please try again.', user: false };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
       setIsTyping(false);
@@ -72,7 +75,7 @@ function Chatbot({ onClose }) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about deep learning..."
+              placeholder="Ask about any educational topic..."
               className="flex-grow px-4 py-2 bg-transparent focus:outline-none dark:text-gray-100"
             />
             <button
