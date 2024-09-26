@@ -18,7 +18,7 @@ function Addcourse() {
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/admin/org');
+        const response = await axios.get('https://api.phemesoft.com/admin/org');
         if (response.data && Array.isArray(response.data.universities)) {
           setUniversities(response.data.universities);
         } else {
