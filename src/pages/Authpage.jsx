@@ -1,29 +1,58 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../api/api';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginInfo, setLoginInfo] = useState({
+    email: '',
+    password: ''
+  });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(
-        `http://localhost:4000/user/login`,
-        { email, password },
-        { withCredentials: true }
-      );
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+    setLoginInfo((prevInfo) => ({
+      ...prevInfo,
+      [name]: value
+    }));
+  };
 
-      if (response.data.success) {
-        navigate('/dashboard');
-      } else {
-        setError(response.data.message || 'Invalid login credentials. Please try again.');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const { email, password } = loginInfo;
+    if (!email || !password) {
+      return setError('Email and password are required');
+    }
+    try {
+      const url = `${BASE_URL}/login`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginInfo)
+      });
+      const result = await response.json();
+      const { success, message, jwtToken, name, error } = result;
+      if (success) {
+        setError(null);
+        localStorage.setItem('token', jwtToken);
+        localStorage.setItem('loggedInUser', name);
+        setTimeout(() => {
+          navigate('/dashboard'); // Replace with the actual route you want to navigate to
+        }, 1000);
+      } else if (error) {
+        const details = error?.details[0]?.message;
+        setError(details || 'An error occurred');
+      } else if (!success) {
+        setError(message);
       }
+      // console.log(result);
     } catch (err) {
-      setError('Invalid login credentials. Please try again.');
+      setError('An error occurred. Please try again.');
+      console.error('Error:', err);
     }
   };
 
@@ -43,7 +72,7 @@ function Login() {
             Sign in to continue
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="email-address" className="sr-only">
@@ -55,8 +84,8 @@ function Login() {
                 type="email"
                 autoComplete="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={loginInfo.email}
+                onChange={handleChange}
                 className="appearance-none rounded-md block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out sm:text-sm"
                 placeholder="Email address"
               />
@@ -71,43 +100,32 @@ function Login() {
                 type="password"
                 autoComplete="current-password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={loginInfo.password}
+                onChange={handleChange}
                 className="appearance-none rounded-md block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out sm:text-sm"
                 placeholder="Password"
               />
             </div>
           </div>
-
           {error && (
             <div className="text-red-500 text-sm mt-2 text-center">
               {error}
             </div>
           )}
-
           <div className="flex items-center justify-between mt-6">
             <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
               Forgot your password?
             </a>
           </div>
-
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Sign in
             </button>
           </div>
         </form>
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
-            <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Sign up
-            </a>
-          </p>
-        </div>
       </div>
     </div>
   );
