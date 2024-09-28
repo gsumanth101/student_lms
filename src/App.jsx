@@ -21,6 +21,7 @@ import Createuser from './pages/Createuser';
 import Createspoc from './pages/Createspoc';
 import Managespoc from './pages/Managespoc';
 import ProtectedRoute from './ProtectedRoute';
+import Assessments from './pages/Assessments';
 
 function App() {
   const location = useLocation();
@@ -35,7 +36,8 @@ function App() {
     <>
       <Routes>
         <Route exact path="/" element={<Login />} />
-        <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} />
+        {/* <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} /> */}
+        <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/add_university" element={<ProtectedRoute element={Adduniversity} />} />
         <Route path="/manage_university" element={<ProtectedRoute element={Manageuniversity} />} />
         <Route path="/add_course" element={<ProtectedRoute element={Addcourse} />} />
@@ -44,6 +46,7 @@ function App() {
         <Route path="/create_user" element={<ProtectedRoute element={Createuser} />} />
         <Route path="/create_spoc" element={<ProtectedRoute element={Createspoc} />} />
         <Route path="/manage_spoc" element={<ProtectedRoute element={Managespoc} />} />
+        <Route path="/assessments" element={< Assessments/>} />
       </Routes>
     </>
   );
